@@ -1,5 +1,3 @@
-# docker-compose.yml
-
 services:
   frontend:
     container_name: otumami_react
@@ -63,14 +61,6 @@ services:
     # プロジェクト全体をコンテナ内の/workspacesにマウントします
     volumes:
       - .:/workspaces:cached
-      # ↓↓↓ SSH Agent Forwardingのためにこの行を追加 ↓↓↓
-      - type: bind
-        source: ${SSH_AUTH_SOCK}
-        target: /ssh-agent
-
-    # ↓↓↓ SSH Agent Forwardingのためにこのセクションを追加 ↓↓↓
-    environment:
-      - SSH_AUTH_SOCK=/ssh-agent
 
     # コンテナがすぐに終了しないようにします
     command: sleep infinity
