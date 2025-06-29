@@ -57,12 +57,21 @@ services:
     ports:
       - "8080:80"
 
-  # --- ここからが新しい開発専用サービス ---
+  # --- ここからが開発専用サービス ---
   dev:
     image: mcr.microsoft.com/devcontainers/base:bullseye
     # プロジェクト全体をコンテナ内の/workspacesにマウントします
     volumes:
       - .:/workspaces:cached
+      # ↓↓↓ SSH Agent Forwardingのためにこの行を追加 ↓↓↓
+      - type: bind
+        source: ${SSH_AUTH_SOCK}
+        target: /ssh-agent
+
+    # ↓↓↓ SSH Agent Forwardingのためにこのセクションを追加 ↓↓↓
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
+
     # コンテナがすぐに終了しないようにします
     command: sleep infinity
   # --- ここまで ---
