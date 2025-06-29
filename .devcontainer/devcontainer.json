@@ -1,0 +1,47 @@
+{
+	"name": "Otsumami App Dev",
+
+	// docker-compose.yml を再度読み込むように指定します
+	"dockerComposeFile": [
+		"../docker-compose.yml"
+	],
+	
+	// 接続先を、開発専用の「dev」サービスに指定します
+	"service": "dev",
+
+	// VSCodeで開く場所を指定します
+	"workspaceFolder": "/workspaces",
+
+	 "forwardPorts": [11434],
+
+	// 必要な機能を全てここで宣言します
+	"features": {
+		// Go言語をインストール
+		"ghcr.io/devcontainers/features/go:1": {
+			"version": "1.24"
+		},
+		// Gitをインストール
+		"ghcr.io/devcontainers/features/git:1": {
+			"version": "latest"
+		},
+		// コンテナ内からDockerを操作する機能
+		"ghcr.io/devcontainers/features/docker-from-docker:1": {
+			"version": "latest"
+		}
+	},
+	
+	// VSCodeのカスタマイズ設定
+	"customizations": {
+		"vscode": {
+			// コンテナ内にインストールするVSCode拡張機能のリスト
+			"extensions": [
+				"ms-vscode-remote.remote-containers",
+				"ms-azuretools.vscode-docker",
+				"golang.Go",
+				"GitHub.copilot",
+        		"GitHub.copilot-chat",
+				"saoudrizwan.claude-dev"
+			]
+		}
+	}
+}

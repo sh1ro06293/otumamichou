@@ -1,0 +1,53 @@
+# .gitignore for Go projects
+
+### Dependencies ###
+# Goモジュールの依存関係を格納するディレクトリ。go.modとgo.sumで管理するため不要
+/vendor/
+
+### Build artifacts ###
+# Goのビルドで生成される実行可能ファイル
+# プロジェクト名が 'my-app' の場合の例。自分のプロジェクト名に変更してください。
+/my-app
+# Windows用の実行可能ファイル
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+### Log files ###
+# ログファイル
+*.log
+log/
+logs/
+
+### Temporary files ###
+# 一時ファイルやディレクトリ
+tmp/
+*.tmp
+*.bak
+*.swp
+
+### Environment variables ###
+# 環境変数ファイル。APIキーなどの機密情報を含むため、絶対にコミットしない
+.env
+.env.*
+!.env.example
+
+### Tooling ###
+# airの一時ファイル
+tmp/
+
+# Goのテストカバレッジプロファイル
+coverage.out
+*.cover
+
+### OS / Editor specific ###
+# macOS
+.DS_Store
+
+# Visual Studio Code
+.vscode/
+
+# GoLand / IntelliJ
+.idea/

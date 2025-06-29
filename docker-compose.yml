@@ -1,0 +1,71 @@
+# docker-compose.yml
+
+services:
+  frontend:
+    container_name: otumami_react
+    hostname: localhost
+    ports:
+      - "5173:5173"
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    tty: true
+    stdin_open: true
+
+  backend:
+    container_name: otumami_backend
+    hostname: localhost
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    tty: true
+    stdin_open: true
+
+  db:
+    container_name: otumami_db
+    image: mysql:8.0
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: otumami_database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: otumami
+      TZ: Asia/tokyo
+    command:  mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./DB/date:/var/lib/mysql
+      - ./DB/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./DB/sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    container_name: otumami_phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PNA_AUTHORIZE_NEW=1
+      - PMA_HOST=db
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+    ports:
+      - "8080:80"
+
+  # --- ここからが新しい開発専用サービス ---
+  dev:
+    image: mcr.microsoft.com/devcontainers/base:bullseye
+    # プロジェクト全体をコンテナ内の/workspacesにマウントします
+    volumes:
+      - .:/workspaces:cached
+    # コンテナがすぐに終了しないようにします
+    command: sleep infinity
+  # --- ここまで ---
+
+volumes:
+  node_modules:

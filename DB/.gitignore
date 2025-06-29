@@ -1,0 +1,9 @@
+# DBの永続化データ
+date/
+
+# DBの自動生成ファイル
+ib_*
+auto.cnf
+
+# その他
+.DS_Store
