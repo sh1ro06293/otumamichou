@@ -5,10 +5,10 @@
     ],
     "service": "dev",
     "workspaceFolder": "/workspaces",
-    "forwardPorts": [],
+    // ★★★ コンテナ初回作成時に、ファイルの所有者を直接変更する ★★★
+    "postCreateCommand": "sudo chown vscode /var/run/docker.sock",
     "customizations": {
         "vscode": {
-            // ★★★ 拡張機能を追加 ★★★
             "extensions": [
                 "ms-vscode-remote.remote-containers",
                 "ms-azuretools.vscode-docker",
@@ -19,11 +19,8 @@
                 "esbenp.prettier-vscode",
                 "dbaeumer.vscode-eslint"
             ],
-            // ★★★ 設定を追加 ★★★
             "settings": {
-                // ファイル保存時に自動でフォーマットをかける設定
                 "editor.formatOnSave": true,
-                // デフォルトのフォーマッターをPrettierに設定
                 "[typescript]": {
                     "editor.defaultFormatter": "esbenp.prettier-vscode"
                 },
@@ -39,12 +36,10 @@
                 "[json]": {
                     "editor.defaultFormatter": "esbenp.prettier-vscode"
                 },
-                // Goのフォーマット設定
                 "[go]": {
                     "editor.formatOnSave": true,
                     "editor.defaultFormatter": "golang.go"
                 },
-                // ESLintによる自動修正を有効化
                 "editor.codeActionsOnSave": {
                     "source.fixAll.eslint": "explicit"
                 }
