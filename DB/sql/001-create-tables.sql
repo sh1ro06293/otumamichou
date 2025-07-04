@@ -2,21 +2,34 @@ CREATE DATABASE IF NOT EXISTS otumami_database;
 
 USE otumami_database;
 
+
 CREATE TABLE IF NOT EXISTS UserTable (
-    Id INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(50) NOT NULL,
-    Email VARCHAR(100) NOT NULL UNIQUE,
-    Password VARCHAR(100) NOT NULL
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    uuid        CHAR(36) NOT NULL UNIQUE,
+    name        VARCHAR(100) NOT NULL,
+    email       VARCHAR(255) NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS RefreshTokenTable (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id     BIGINT NOT NULL UNIQUE,
+    token_hash  VARCHAR(255) NOT NULL,
+    expires_at  DATETIME NOT NULL,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES UserTable(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS ChatRecipeTable (
     Id INT PRIMARY KEY AUTO_INCREMENT,
-    UserId INT NOT NULL,
+    UserId BIGINT NOT NULL, -- 修正点
     Title VARCHAR(100) NOT NULL,
     Food TEXT NOT NULL,
     Recipe TEXT NOT NULL,
     Drink VARCHAR(100) NOT NULL,
     LikeRecipe BOOLEAN NOT NULL,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP, -- 作成日を追加すると便利です
 
-    FOREIGN KEY (UserId) REFERENCES UserTable(Id)
+    FOREIGN KEY (UserId) REFERENCES UserTable(Id) ON DELETE CASCADE -- 親が削除されたら子も削除
 );
