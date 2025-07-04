@@ -1,12 +1,21 @@
+version: '3.8'
+
 services:
+  dev:
+    container_name: otumami_dev_container
+    build: .devcontainer
+    volumes:
+      - .:/workspaces:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: sleep infinity
+
   frontend:
     container_name: otumami_react
-    hostname: localhost
-    ports:
-      - "5173:5173"
-    build: 
+    build:
       context: ./frontend
       dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
     volumes:
       - ./frontend:/usr/src/app
       - node_modules:/usr/src/app/node_modules
@@ -15,7 +24,6 @@ services:
 
   backend:
     container_name: otumami_backend
-    hostname: localhost
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -25,18 +33,21 @@ services:
       - ./backend:/app
     tty: true
     stdin_open: true
+    depends_on:
+      - db
 
   db:
     container_name: otumami_db
     image: mysql:8.0
-    platform: linux/amd64
+    # ★★★ プラットフォームをarm64に変更 ★★★
+    platform: linux/arm64
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: otumami_database
       MYSQL_USER: user
       MYSQL_PASSWORD: otumami
-      TZ: Asia/tokyo
-    command:  mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+      TZ: Asia/Tokyo
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
       - ./DB/date:/var/lib/mysql
       - ./DB/my.cnf:/etc/mysql/conf.d/my.cnf
@@ -46,25 +57,15 @@ services:
 
   phpmyadmin:
     container_name: otumami_phpmyadmin
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     environment:
-      - PNA_AUTHORIZE_NEW=1
       - PMA_HOST=db
-      - PMA_USER=root
-      - PMA_PASSWORD=root
+      - PMA_USER=user
+      - PMA_PASSWORD=otumami
     ports:
       - "8080:80"
-
-  # --- ここからが開発専用サービス ---
-  dev:
-    image: mcr.microsoft.com/devcontainers/base:bullseye
-    # プロジェクト全体をコンテナ内の/workspacesにマウントします
-    volumes:
-      - .:/workspaces:cached
-
-    # コンテナがすぐに終了しないようにします
-    command: sleep infinity
-  # --- ここまで ---
+    depends_on:
+      - db
 
 volumes:
   node_modules:

@@ -1,47 +1,54 @@
 {
-	"name": "Otsumami App Dev",
-
-	// docker-compose.yml を再度読み込むように指定します
-	"dockerComposeFile": [
-		"../docker-compose.yml"
-	],
-	
-	// 接続先を、開発専用の「dev」サービスに指定します
-	"service": "dev",
-
-	// VSCodeで開く場所を指定します
-	"workspaceFolder": "/workspaces",
-
-	 "forwardPorts": [11434],
-
-	// 必要な機能を全てここで宣言します
-	"features": {
-		// Go言語をインストール
-		"ghcr.io/devcontainers/features/go:1": {
-			"version": "1.24"
-		},
-		// Gitをインストール
-		"ghcr.io/devcontainers/features/git:1": {
-			"version": "latest"
-		},
-		// コンテナ内からDockerを操作する機能
-		"ghcr.io/devcontainers/features/docker-from-docker:1": {
-			"version": "latest"
-		}
-	},
-	
-	// VSCodeのカスタマイズ設定
-	"customizations": {
-		"vscode": {
-			// コンテナ内にインストールするVSCode拡張機能のリスト
-			"extensions": [
-				"ms-vscode-remote.remote-containers",
-				"ms-azuretools.vscode-docker",
-				"golang.Go",
-				"GitHub.copilot",
-        		"GitHub.copilot-chat",
-				"saoudrizwan.claude-dev"
-			]
-		}
-	}
+    "name": "Otsumami App Dev",
+    "dockerComposeFile": [
+        "../compose.yml"
+    ],
+    "service": "dev",
+    "workspaceFolder": "/workspaces",
+    "forwardPorts": [],
+    "customizations": {
+        "vscode": {
+            // ★★★ 拡張機能を追加 ★★★
+            "extensions": [
+                "ms-vscode-remote.remote-containers",
+                "ms-azuretools.vscode-docker",
+                "golang.Go",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "saoudrizwan.claude-dev",
+                "esbenp.prettier-vscode",
+                "dbaeumer.vscode-eslint"
+            ],
+            // ★★★ 設定を追加 ★★★
+            "settings": {
+                // ファイル保存時に自動でフォーマットをかける設定
+                "editor.formatOnSave": true,
+                // デフォルトのフォーマッターをPrettierに設定
+                "[typescript]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[typescriptreact]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[javascript]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[javascriptreact]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[json]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                // Goのフォーマット設定
+                "[go]": {
+                    "editor.formatOnSave": true,
+                    "editor.defaultFormatter": "golang.go"
+                },
+                // ESLintによる自動修正を有効化
+                "editor.codeActionsOnSave": {
+                    "source.fixAll.eslint": "explicit"
+                }
+            }
+        }
+    }
 }

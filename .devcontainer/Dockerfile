@@ -1,4 +1,4 @@
-# 開発用のベースイメージを使用 (Gitや基本的なツールはプリインストール済み)
+# 開発用のベースイメージを使用
 FROM mcr.microsoft.com/devcontainers/base:bullseye
 
 # ARGでバージョンを管理
@@ -12,33 +12,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     build-essential \
   && \
-    wget "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" -O /tmp/go.tar.gz \
+    # ★★★ Goのアーキテクチャをarm64に変更 ★★★
+    wget "https://go.dev/dl/go${GO_VERSION}.linux-arm64.tar.gz" -O /tmp/go.tar.gz \
   && \
     tar -C /usr/local -xzf /tmp/go.tar.gz \
   && \
     rm /tmp/go.tar.gz \
   && \
-    # CGOを無効にしてgoplsをインストール（アーキテクチャ問題を回避）
-    CGO_ENABLED=0 /usr/local/go/bin/go install golang.org/x/tools/gopls@latest \
+    # arm64ネイティブで動くためCGO無効化は不要
+    /usr/local/go/bin/go install golang.org/x/tools/gopls@latest \
   && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # nvmとNode.jsをインストール
-# 1. nvmのインストールスクリプトをダウンロードして実行権限を付与
 RUN wget -qO /tmp/install.sh https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh \
  && chmod +x /tmp/install.sh
-
-# 2. vscodeユーザーとしてインストールスクリプトを実行
 RUN su vscode -c "/tmp/install.sh"
-
-# 3. vscodeユーザーとしてnvmを使いNode.jsをインストール
 RUN su vscode -c ' \
     . "/home/vscode/.nvm/nvm.sh" && \
     nvm install ${NODE_VERSION} && \
     nvm alias default ${NODE_VERSION} \
 '
-
-# 4. インストールスクリプトをクリーンアップ
 RUN rm /tmp/install.sh
 
 # Goのパスのみをコンテナ全体で有効にする
