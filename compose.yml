@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  dev:
+    container_name: otumami_dev_container
+    build: .devcontainer
+    volumes:
+      - .:/workspaces:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: sleep infinity
+
+  frontend:
+    container_name: otumami_react
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    tty: true
+    stdin_open: true
+
+  backend:
+    container_name: otumami_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    tty: true
+    stdin_open: true
+    depends_on:
+      - db
+
+  db:
+    container_name: otumami_db
+    image: mysql:8.0
+    # ★★★ プラットフォームをarm64に変更 ★★★
+    platform: linux/arm64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: otumami_database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: otumami
+      TZ: Asia/Tokyo
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./DB/date:/var/lib/mysql
+      - ./DB/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./DB/sql:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    container_name: otumami_phpmyadmin
+    image: phpmyadmin
+    environment:
+      - PMA_HOST=db
+      - PMA_USER=user
+      - PMA_PASSWORD=otumami
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  node_modules:

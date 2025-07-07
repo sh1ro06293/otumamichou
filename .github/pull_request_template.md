@@ -22,6 +22,7 @@
 
 ## 備考
 
+
 <!-- for GitHub Copilot review rule -->
 <!--
 レビューする際には、以下のprefix(接頭辞)をつけてください
@@ -34,3 +35,4 @@
 <!-- for GitHub Copilot review  rule-->
 
 <!-- I want to review in Japanese. -->
+
