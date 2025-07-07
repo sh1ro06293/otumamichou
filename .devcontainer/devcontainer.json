@@ -17,7 +17,8 @@
                 "GitHub.copilot-chat",
                 "saoudrizwan.claude-dev",
                 "esbenp.prettier-vscode",
-                "dbaeumer.vscode-eslint"
+                "dbaeumer.vscode-eslint",
+                "Gruntfuggly.todo-tree"
             ],
             "settings": {
                 "editor.formatOnSave": true,
