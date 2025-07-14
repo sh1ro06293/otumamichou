@@ -2,8 +2,8 @@ package initializers
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/sh1ro06293/otumamichou/config"
 	"github.com/sh1ro06293/otumamichou/models"
 
 	"gorm.io/driver/mysql"
@@ -11,7 +11,9 @@ import (
 )
 
 func ConnectToDB() {
-	db, err := gorm.Open(mysql.Open(os.Getenv("DSN")), &gorm.Config{})
+	fmt.Println("DB接続を開始します...")
+	fmt.Println("DSN:", config.DSN)
+	db, err := gorm.Open(mysql.Open(config.DSN), &gorm.Config{})
 	if err != nil {
 		fmt.Println("DB接続に失敗しました:", err)
 	} else {

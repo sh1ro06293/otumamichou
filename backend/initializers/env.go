@@ -1,16 +1,14 @@
 package initializers
 
 import (
-	"fmt"
 	"log"
 	"os"
 
-	"github.com/sh1ro06293/otumamichou/config"
-
 	"github.com/joho/godotenv"
+	"github.com/sh1ro06293/otumamichou/config"
 )
 
-func init() {
+func LoadEnvVariables() {
 	// .envファイルから環境変数を読み込む
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, loading from environment variables")
@@ -30,9 +28,12 @@ func init() {
 	dbName := os.Getenv("DB_NAME")
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
+	if dbUser == "" || dbPassword == "" || dbName == "" || dbHost == "" || dbPort == "" {
+		log.Fatal("FATAL: One or more database environment variables are not set.")
+	}
 
-	config.DSN = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPassword, dbName)
+	config.DSN = config.BuildDSN(dbHost, dbPort, dbUser, dbPassword, dbName)
+	log.Println("Database configuration loaded successfully.")
 
 	log.Println("Configuration loaded successfully.")
 }

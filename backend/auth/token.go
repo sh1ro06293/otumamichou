@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/sh1ro06293/otumamichou/config"
@@ -24,7 +25,9 @@ func GenerateAccessToken(userID uint) (string, error) {
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(config.JwtSecretKey)
+	signedToken, _ := token.SignedString(config.JwtSecretKey)
+	fmt.Println("Generated Token:", signedToken)
+	return signedToken, nil
 }
 
 // 受け取ったトークンを検証する関数

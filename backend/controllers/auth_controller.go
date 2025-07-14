@@ -3,6 +3,7 @@ package controllers
 import (
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/sh1ro06293/otumamichou/models"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm/clause"
@@ -54,6 +54,7 @@ func generateTokensAndSetCookies(c *gin.Context, user *models.User) error {
 	// Cookieにセット
 	httpOnly := true
 	secure := false // ローカル開発のためfalse。本番環境(HTTPS)ではtrueに
+	fmt.Println("Access Token being set in cookie:", accessTokenString)
 	c.SetCookie("access_token", accessTokenString, 60*15, "/", "localhost", secure, httpOnly)
 	c.SetCookie("refresh_token", refreshTokenString, 3600*24*7, "/", "localhost", secure, httpOnly)
 
@@ -118,35 +119,36 @@ func RefreshToken(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not provided"})
 		return
 	}
-
-	// 期限切れのアクセストークンからユーザーIDを（署名検証なしで）パースして取得
-	accessTokenString, _ := c.Cookie("access_token")
-	claims := &auth.AccessTokenClaims{}
-	_, _, err = new(jwt.Parser).ParseUnverified(accessTokenString, claims)
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid access token"})
+	// 2. DBに保存されているすべての有効なリフレッシュトークンを取得
+	var activeTokens []models.RefreshToken
+	if err := models.DB.Where("expires_at > ?", time.Now()).Find(&activeTokens).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		return
 	}
 
-	// DBからリフレッシュトークンを検索・検証
-	var refreshToken models.RefreshToken
-	if err := models.DB.Where("user_id = ?", claims.UserID).First(&refreshToken).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not found"})
-		return
+	var matchedToken models.RefreshToken
+	var userFound bool
+
+	// 3. 受け取ったトークンとDB内のハッシュを一つずつ比較
+	for _, tokenRecord := range activeTokens {
+		// ハッシュの比較
+		if err := bcrypt.CompareHashAndPassword([]byte(tokenRecord.TokenHash), []byte(refreshTokenString)); err == nil {
+			// 一致するトークンが見つかった
+			matchedToken = tokenRecord
+			userFound = true
+			break
+		}
 	}
-	if time.Now().After(refreshToken.ExpiresAt) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Refresh token expired"})
-		return
-	}
-	// TODO:ハッシュ化を関数にしてutils/hash.goに移動
-	if err := bcrypt.CompareHashAndPassword([]byte(refreshToken.TokenHash), []byte(refreshTokenString)); err != nil {
+
+	// 4. 一致するトークンが見つからなかった場合
+	if !userFound {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 		return
 	}
 
 	// 検証成功後、新しいトークンペアを発行
 	var user models.User
-	models.DB.First(&user, refreshToken.UserID)
+	models.DB.First(&user, matchedToken.UserID)
 	if err := generateTokensAndSetCookies(c, &user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate tokens"})
 		return
@@ -165,9 +167,14 @@ func Logout(c *gin.Context) {
 
 // GetUser は認証済みユーザーの情報を返します。
 func GetUser(c *gin.Context) {
-	userID, _ := c.Get("user_id")
+	userID, _ := c.Get("userID")
+	fmt.Println("Fetching user with ID:", userID)
 	var user models.User
 	// パスワードなどを含まないよう、Selectでカラムを明示的に指定
-	models.DB.Select("uuid, name, email").Where("id = ?", userID).First(&user)
+	err := models.DB.Select("UUID", "Name", "Email").Where("id = ?", userID).First(&user).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
 	c.JSON(http.StatusOK, user)
 }

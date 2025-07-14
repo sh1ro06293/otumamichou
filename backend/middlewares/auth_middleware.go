@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/sh1ro06293/otumamichou/config"
@@ -15,7 +16,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		tokenString, err := c.Cookie("access_token")
 
 		if err != nil {
-			// トークンがななければ401
+			// トークンがなければ401
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not provided"})
 			return
 		}
@@ -24,14 +25,16 @@ func AuthMiddleware() gin.HandlerFunc {
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return config.JwtSecretKey, nil
 		})
-		if err != nil || token.Valid {
-			// トークンの検証に失敗した場合は401
+
+		// 「エラーがある」または「トークンが有効でない」場合に弾く
+		if err != nil || !token.Valid {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 			return
 		}
 
-		// トークンが有効な場合、ユーザー情報を取得
+		// トークンが有効な場合、ユーザー情報をコンテキストにセット
 		c.Set("userID", claims.UserID)
+		fmt.Println("Authenticated user ID:", claims.UserID)
 
 		c.Next()
 	}
