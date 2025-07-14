@@ -6,6 +6,7 @@ services:
     build: .devcontainer
     volumes:
       - .:/workspaces:cached
+      - node_modules:/usr/src/app/node_modules
       - /var/run/docker.sock:/var/run/docker.sock
     command: sleep infinity
 
@@ -28,7 +29,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8080:8080"
     volumes:
       - ./backend:/app
     tty: true
@@ -63,7 +64,7 @@ services:
       - PMA_USER=user
       - PMA_PASSWORD=otumami
     ports:
-      - "8080:80"
+      - "8081:80"
     depends_on:
       - db
 
