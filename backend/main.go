@@ -57,6 +57,7 @@ func main() {
 		{
 			authorized.GET("user", controllers.GetUser)
 			authorized.POST("logout", controllers.Logout)
+			authorized.GET("otumami", controllers.GetOtumami)
 		}
 	}
 

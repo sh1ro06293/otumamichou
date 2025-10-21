@@ -32,17 +32,24 @@ function Mypage() {
 
   return (
     <div>
-      <h1>My Page</h1>
-      <p>
-        <strong>UUID:</strong> {user.uuid}
-      </p>
-      <p>
-        <strong>Name:</strong> {user.name}
-      </p>
-      <p>
-        <strong>Email:</strong> {user.email}
-      </p>
-      <button onClick={handleLogout}>Logout</button>
+      <div>
+        <h1>My Page</h1>
+        <p>
+          <strong>UUID:</strong> {user.uuid}
+        </p>
+        <p>
+          <strong>Name:</strong> {user.name}
+        </p>
+        <p>
+          <strong>Email:</strong> {user.email}
+        </p>
+        <button onClick={handleLogout}>Logout</button>
+      </div>
+      <div>
+        <p>
+          <a href="/otsumami">おつまみ生成</a>
+        </p>
+      </div>
     </div>
   );
 }

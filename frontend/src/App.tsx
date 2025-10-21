@@ -5,6 +5,7 @@ import { useAuth } from './hooks/useAuth';
 import Login from './pages/Login';
 import Mypage from './pages/Mypage';
 import Register from './pages/Register';
+import Otsumami from './pages/Otsumami';
 import ProtectedRoute from './components/ProtectedRoute'; // 正しいコンポーネントをインポート
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         {/* --- 認証が必要な保護されたルート --- */}
         <Route element={<ProtectedRoute />}>
           <Route path="/mypage/:uuid" element={<Mypage />} />
+          <Route path="/otsumami" element={<Otsumami />} />
           {/* 他にも保護したいページがあればここに追加 */}
         </Route>
       </Routes>
