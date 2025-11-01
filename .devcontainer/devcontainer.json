@@ -18,7 +18,8 @@
                 "saoudrizwan.claude-dev",
                 "esbenp.prettier-vscode",
                 "dbaeumer.vscode-eslint",
-                "Gruntfuggly.todo-tree"
+                "Gruntfuggly.todo-tree",
+                "hediet.vscode-drawio"
             ],
             "settings": {
                 "editor.formatOnSave": true,
