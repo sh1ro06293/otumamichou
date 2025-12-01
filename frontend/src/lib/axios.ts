@@ -53,4 +53,15 @@ apiClient.interceptors.response.use(
   }
 );
 
+// /POSTOtumamiに送る処理
+export const postOtumami = async (data: {
+  includeIngredients: string[];
+  excludeIngredients: string[];
+}) => {
+  console.log('APIリクエストデータ:', data);
+  const responseData = await apiClient.post('/otumami', data);
+  console.log('APIレスポンスデータ:', responseData.data);
+  return responseData.data;
+};
+
 export default apiClient;

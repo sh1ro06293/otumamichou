@@ -3,10 +3,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 // import { useForm } from 'react-hook-form';
-import apiClient from '../lib/axios';
-import Mypage from './Mypage';
+// import apiClient from '../lib/axios';
 
 import { useState } from 'react';
+import { postOtumami } from '../lib/axios';
 
 function Otsumami() {
   const [includeIngredients, setIncludeIngredients] = useState<string[]>([]);
@@ -33,8 +33,48 @@ function Otsumami() {
     const filteredExclude = excludeIngredients.filter(
       (ingredient) => ingredient.trim() !== ''
     );
+    if (filteredInclude.length === 0) {
+      alert('使用したい食材を指定してください。');
+      return;
+    }
     console.log('使用したい食材:', filteredInclude);
     console.log('使用したくない食材:', filteredExclude);
+    // ここでAPIリクエストを送信するなどの処理を行う
+    postOtumami({
+      includeIngredients: filteredInclude,
+      excludeIngredients: filteredExclude,
+    });
+  };
+
+  const addItem = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    Items: string[],
+    setItems: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    const newItem = [...Items];
+    newItem[index] = e.target.value;
+    setItems(newItem);
+  };
+
+  const onBlurItem = (
+    Items: string[],
+    setItems: React.Dispatch<React.SetStateAction<string[]>>,
+    index: number,
+    itemValue: string
+  ) => {
+    const newItems = [...Items];
+    newItems[index] = itemValue.trim();
+    setItems(newItems);
+  };
+
+  const DeleteItem = (
+    index: number,
+    setItems: React.Dispatch<React.SetStateAction<string[]>>,
+    items: string[]
+  ) => {
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
   };
 
   if (!user) {
@@ -50,23 +90,8 @@ function Otsumami() {
       </div>
       <div>
         <form>
-          {/* フォームを作成
-            使用したい食材の入力
-            複数の食材をブロックで管理
-            入れたくないものを入力
-            生成ボタン→遷移するようにする
-          */}
           <div>
             <label>使用したい食材</label>
-            {/* <input
-              type="text"
-              name="includeIngredients"
-              onChange={(e) => {
-                const newIngredients = [...includeIngredients];
-                newIngredients[0] = e.target.value;
-                setIncludeIngredients(newIngredients);
-              }}
-            /> */}
             <button
               type="button"
               onClick={() => setIncludeIngredients(['', ...includeIngredients])}
@@ -78,24 +103,26 @@ function Otsumami() {
                 <input
                   type="text"
                   value={ingredient}
-                  onChange={(e) => {
-                    const newIngredients = [...includeIngredients];
-                    newIngredients[index] = e.target.value;
-                    setIncludeIngredients(newIngredients);
-                  }}
+                  onChange={(e) =>
+                    addItem(e, index, includeIngredients, setIncludeIngredients)
+                  }
                   onBlur={() => {
-                    const newIngredients = [...includeIngredients];
-                    newIngredients[index] = ingredient.trim();
-                    setIncludeIngredients(newIngredients);
+                    onBlurItem(
+                      includeIngredients,
+                      setIncludeIngredients,
+                      index,
+                      ingredient
+                    );
                   }}
                 />
                 <button
                   type="button"
                   onClick={() => {
-                    const newIngredients = includeIngredients.filter(
-                      (_, i) => i !== index
+                    DeleteItem(
+                      index,
+                      setIncludeIngredients,
+                      includeIngredients
                     );
-                    setIncludeIngredients(newIngredients);
                   }}
                 >
                   削除
@@ -117,23 +144,30 @@ function Otsumami() {
                   type="text"
                   value={ingredient}
                   onChange={(e) => {
-                    const newIngredients = [...excludeIngredients];
-                    newIngredients[index] = e.target.value;
-                    setExcludeIngredients(newIngredients);
+                    addItem(
+                      e,
+                      index,
+                      excludeIngredients,
+                      setExcludeIngredients
+                    );
                   }}
                   onBlur={() => {
-                    const newIngredients = [...excludeIngredients];
-                    newIngredients[index] = ingredient.trim();
-                    setExcludeIngredients(newIngredients);
+                    onBlurItem(
+                      excludeIngredients,
+                      setExcludeIngredients,
+                      index,
+                      ingredient
+                    );
                   }}
                 />
                 <button
                   type="button"
                   onClick={() => {
-                    const newIngredients = excludeIngredients.filter(
-                      (_, i) => i !== index
+                    DeleteItem(
+                      index,
+                      setExcludeIngredients,
+                      excludeIngredients
                     );
-                    setExcludeIngredients(newIngredients);
                   }}
                 >
                   削除
