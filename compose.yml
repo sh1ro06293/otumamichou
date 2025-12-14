@@ -1,14 +1,6 @@
 version: '3.8'
 
 services:
-  dev:
-    container_name: otumami_dev_container
-    build: .devcontainer
-    volumes:
-      - .:/workspaces:cached
-      - node_modules:/usr/src/app/node_modules
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: sleep infinity
 
   frontend:
     container_name: otumami_react
@@ -23,19 +15,6 @@ services:
     tty: true
     stdin_open: true
 
-  backend:
-    container_name: otumami_backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./backend:/app
-    tty: true
-    stdin_open: true
-    depends_on:
-      - db
 
   db:
     container_name: otumami_db
@@ -65,6 +44,19 @@ services:
       - PMA_PASSWORD=otumami
     ports:
       - "8081:80"
+    depends_on:
+      - db
+  backend:
+    container_name: otumami_backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app
+    tty: true
+    stdin_open: true
     depends_on:
       - db
 
