@@ -1,22 +1,25 @@
 // src/pages/Mypage.tsx
 
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Text, Heading } from '@chakra-ui/react';
 // import { useForm } from 'react-hook-form';
 // import apiClient from '../lib/axios';
 
-import { useState } from 'react';
 import { postOtumami } from '../lib/axios';
 
 function Otsumami() {
   const [includeIngredients, setIncludeIngredients] = useState<string[]>([]);
   const [excludeIngredients, setExcludeIngredients] = useState<string[]>([]);
+  const [resData, setResData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const { uuid } = useParams();
   const navigate = useNavigate();
 
   // URLのuuidとログイン中のユーザーのuuidが一致しない場合は不正アクセスとみなす
-  // ★★★ .trim() を使って前後の空白を削除してから比較 ★★★
+  // .trim() を使って前後の空白を削除してから比較
   if (user && uuid && user.uuid.replace(/-/g, '') !== uuid.replace(/-/g, '')) {
     return <div>不正なアクセスです。</div>;
   }
@@ -25,7 +28,7 @@ function Otsumami() {
     navigate('/mypage/' + user?.uuid);
   };
 
-  const handleGenerate = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleGenerate = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const filteredInclude = includeIngredients.filter(
       (ingredient) => ingredient.trim() !== ''
@@ -33,17 +36,31 @@ function Otsumami() {
     const filteredExclude = excludeIngredients.filter(
       (ingredient) => ingredient.trim() !== ''
     );
+
     if (filteredInclude.length === 0) {
       alert('使用したい食材を指定してください。');
       return;
     }
-    console.log('使用したい食材:', filteredInclude);
-    console.log('使用したくない食材:', filteredExclude);
-    // ここでAPIリクエストを送信するなどの処理を行う
-    postOtumami({
-      includeIngredients: filteredInclude,
-      excludeIngredients: filteredExclude,
-    });
+
+    setIsLoading(true);
+    setResData(null);
+
+    try {
+
+      const data = await postOtumami({
+        IncludeIngredients: filteredInclude,
+        ExcludeIngredients: filteredExclude,
+      });
+      
+      // データが返ってきたらセットする
+      setResData(data);
+      
+    } catch (error) {
+      console.error("API Error:", error);
+      alert("生成に失敗しました");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const addItem = (
@@ -176,11 +193,26 @@ function Otsumami() {
             ))}
           </div>
           <p>
-            <button type="button" onClick={handleGenerate}>
-              生成
+            <button type="button" onClick={handleGenerate} disabled={isLoading}>
+              {isLoading ? '生成中...' : '生成'}
             </button>
           </p>
         </form>
+      </div>
+      <div>
+        {resData !== null ? (
+          <div>
+            <h2>{resData.data.name}</h2>
+            <h3>材料</h3>
+            <p>{resData.data.ingredients}</p>
+            <Heading as="h3" size="md">作り方</Heading>
+            <Text whiteSpace="pre-wrap">
+              {resData.data.instructions}
+            </Text>
+          </div>
+        ) : (
+          <div></div>
+        )}
       </div>
     </div>
   );
