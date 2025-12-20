@@ -36,4 +36,10 @@ func LoadEnvVariables() {
 	log.Println("Database configuration loaded successfully.")
 
 	log.Println("Configuration loaded successfully.")
+
+	// GEMINI_API_KEYの読み込み
+	geminiApiKey := os.Getenv("GEMINI_API_KEY")
+	if geminiApiKey == "" {
+		log.Fatal("FATAL: Environment variable GEMINI_API_KEY is not set.")
+	}
 }

@@ -47,6 +47,7 @@ func main() {
 		r.GET("/", func(c *gin.Context) {
 			c.String(http.StatusOK, "hello world")
 		})
+		r.GET("/gemini", controllers.GETOtumami)
 		api.POST("/register", controllers.Register)
 		api.POST("/login", controllers.Login)
 		api.POST("/refresh_token", controllers.RefreshToken)
@@ -57,7 +58,7 @@ func main() {
 		{
 			authorized.GET("user", controllers.GetUser)
 			authorized.POST("logout", controllers.Logout)
-			authorized.GET("otumami", controllers.GetOtumami)
+			authorized.POST("otumami", controllers.POSTOtumami)
 		}
 	}
 
