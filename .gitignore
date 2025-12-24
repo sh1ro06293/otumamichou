@@ -86,3 +86,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+## 本番環境と開発環境で異なる設定をするためのdocker-compose.override.ymlを無視
+compose.override.yml

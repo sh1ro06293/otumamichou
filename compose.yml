@@ -19,8 +19,6 @@ services:
   db:
     container_name: otumami_db
     image: mysql:8.0
-    # ★★★ プラットフォームをarm64に変更 ★★★
-    platform: linux/arm64
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: otumami_database
