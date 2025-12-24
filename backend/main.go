@@ -32,7 +32,7 @@ func main() {
 
 	// CORS (Cross-Origin Resource Sharing) の設定
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:5173"},
+		AllowOrigins: []string{"http://localhost:5173", "http://otumami.merryshiro.org"},
 		// AllowOrigins:     []string{"*"}, // すべてのオリジンを許可
 		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},

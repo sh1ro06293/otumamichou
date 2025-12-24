@@ -32,18 +32,6 @@ services:
       - ./DB/sql:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
-
-  phpmyadmin:
-    container_name: otumami_phpmyadmin
-    image: phpmyadmin
-    environment:
-      - PMA_HOST=db
-      - PMA_USER=user
-      - PMA_PASSWORD=otumami
-    ports:
-      - "8081:80"
-    depends_on:
-      - db
   backend:
     container_name: otumami_backend
     build:
