@@ -16,6 +16,9 @@ func LoadEnvVariables() {
 
 	log.Println("Initializing configuration...")
 
+	// 本番環境かローカル環境かを判定するための環境変数
+	config.IsProd = os.Getenv("APP_ENV") == "production"
+
 	JwtSecretKeyStr := os.Getenv("JWT_SECRET_KEY")
 	if JwtSecretKeyStr == "" {
 		log.Fatal("FATAL: Environment variable JWT_SECRET_KEY is not set.")

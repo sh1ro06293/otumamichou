@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/sh1ro06293/otumamichou/auth"
+	"github.com/sh1ro06293/otumamichou/config"
 	"github.com/sh1ro06293/otumamichou/models"
 
 	"github.com/gin-gonic/gin"
@@ -51,12 +52,30 @@ func generateTokensAndSetCookies(c *gin.Context, user *models.User) error {
 		return err
 	}
 
-	// Cookieにセット
+	var domain string
+	var secure bool
+
+	if config.IsProd {
+		// 【本番環境】
+		domain = ""
+		secure = true // HTTPS必須
+
+		// クロスサイト対策
+		c.SetSameSite(http.SameSiteLaxMode)
+	} else {
+		// 【ローカル開発環境】
+		domain = "localhost"
+		secure = false // HTTPなのでfalse
+
+		c.SetSameSite(http.SameSiteLaxMode)
+	}
+
 	httpOnly := true
-	secure := false // ローカル開発のためfalse。本番環境(HTTPS)ではtrueに
+
 	fmt.Println("Access Token being set in cookie:", accessTokenString)
-	c.SetCookie("access_token", accessTokenString, 60*15, "/", "localhost", secure, httpOnly)
-	c.SetCookie("refresh_token", refreshTokenString, 3600*24*7, "/", "localhost", secure, httpOnly)
+
+	c.SetCookie("access_token", accessTokenString, 60*15, "/", domain, secure, httpOnly)
+	c.SetCookie("refresh_token", refreshTokenString, 3600*24*7, "/", domain, secure, httpOnly)
 
 	return nil
 }
@@ -72,7 +91,6 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// TODO:ハッシュ化を関数にしてutils/hash.goに移動
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	newUser := models.User{
 		UUID:     uuid.NewString(),
@@ -100,7 +118,6 @@ func Login(c *gin.Context) {
 		return
 	}
 	// パスワードのハッシュと入力されたパスワードを比較
-	// TODO:ハッシュ化を関数にしてutils/hash.goに移動
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
@@ -112,7 +129,7 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"uuid": user.UUID, "name": user.Name, "email": user.Email})
 }
 
-// RefreshToken はアクセストークンを再発行します。
+// RefreshToken
 func RefreshToken(c *gin.Context) {
 	refreshTokenString, err := c.Cookie("refresh_token")
 	if err != nil {
