@@ -6,7 +6,7 @@ import Login from './pages/Login';
 import Mypage from './pages/Mypage';
 import Register from './pages/Register';
 import Otsumami from './pages/Otsumami';
-import ProtectedRoute from './components/ProtectedRoute'; // 正しいコンポーネントをインポート
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   const { user } = useAuth();

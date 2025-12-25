@@ -17,10 +17,9 @@ import (
 
 func init() {
 	// 初期化処理を呼び出す
-	// ここでは、環境変数の読み込みやDB接続の初期化などを行う
-	// _ = godotenv.Load() // .envファイルの読み込み（必要に応じて）
-	initializers.LoadEnvVariables() // 環境変数の読み込みå
-	initializers.ConnectToDB()      // DB接続の初期化
+
+	initializers.LoadEnvVariables()
+	initializers.ConnectToDB()
 }
 
 func main() {
@@ -47,14 +46,13 @@ func main() {
 		r.GET("/", func(c *gin.Context) {
 			c.String(http.StatusOK, "hello world")
 		})
-		r.GET("/gemini", controllers.GETOtumami)
 		api.POST("/register", controllers.Register)
 		api.POST("/login", controllers.Login)
 		api.POST("/refresh_token", controllers.RefreshToken)
 
 		// --- 認証が必要なルートグループ ---
 		authorized := api.Group("/")
-		authorized.Use(middlewares.AuthMiddleware()) // このグループは認証ミドルウェアを通る
+		authorized.Use(middlewares.AuthMiddleware())
 		{
 			authorized.GET("user", controllers.GetUser)
 			authorized.POST("logout", controllers.Logout)
@@ -62,6 +60,5 @@ func main() {
 		}
 	}
 
-	// Webサーバーをポート8080で起動
 	r.Run(":8080")
 }

@@ -11,7 +11,6 @@ const ProtectedRoute = () => {
     checkLoginStatus();
   }, [checkLoginStatus]);
 
-  // チェック中はローディング画面などを表示
   if (isLoading) {
     return <div>Loading...</div>;
   }

@@ -1,11 +1,10 @@
-// src/pages/Mypage.tsx
+
 
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Text, Heading } from '@chakra-ui/react';
-// import { useForm } from 'react-hook-form';
-// import apiClient from '../lib/axios';
+
 
 import { postOtumami } from '../lib/axios';
 
@@ -18,8 +17,6 @@ function Otsumami() {
   const { uuid } = useParams();
   const navigate = useNavigate();
 
-  // URLのuuidとログイン中のユーザーのuuidが一致しない場合は不正アクセスとみなす
-  // .trim() を使って前後の空白を削除してから比較
   if (user && uuid && user.uuid.replace(/-/g, '') !== uuid.replace(/-/g, '')) {
     return <div>不正なアクセスです。</div>;
   }
@@ -52,7 +49,7 @@ function Otsumami() {
         ExcludeIngredients: filteredExclude,
       });
       
-      // データが返ってきたらセットする
+
       setResData(data);
       
     } catch (error) {
@@ -95,7 +92,7 @@ function Otsumami() {
   };
 
   if (!user) {
-    // AuthProviderがロード中の場合や、何らかの理由でuserがnullの場合
+
     return <div>Loading user data...</div>;
   }
 

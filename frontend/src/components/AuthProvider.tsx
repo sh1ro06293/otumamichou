@@ -11,12 +11,10 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   console.log(user);
-  // ★★★ 初期値をtrueに変更 ★★★
   const [isLoading, setIsLoading] = useState(true);
 
   const checkLoginStatus = useCallback(async () => {
     console.log(user ? 'User is logged in' + user : 'User is not logged in');
-    // setIsLoading(true); ← 初期値がtrueなので、ここは不要になる（あっても害はない）
     try {
       console.log('Sending request to /user endpoint...');
       const response = await apiClient.get<User>('/user');

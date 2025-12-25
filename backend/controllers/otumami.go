@@ -27,14 +27,5 @@ func POSTOtumami(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": data})
-	// c.JSON(http.StatusOK, gin.H{"otumami": "ok"})
-
-}
-
-func GETOtumami(c *gin.Context) {
-
-	api.SendGeminiRequest([]string{"チーズ"}, []string{"ナッツ"})
-	// response := sendOpenAIRequest()
-	c.JSON(http.StatusOK, gin.H{"otumami": "ok"})
 
 }

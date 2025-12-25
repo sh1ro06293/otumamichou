@@ -11,10 +11,9 @@ import (
 )
 
 func SendGeminiRequest(IncludeIngredients, ExcludeIngredients []string) models.GeminiResponse {
-	// TODO:APIへのリクエストをここで実装する
 
 	ctx := context.Background()
-	// The client gets the API key from the environment variable `GEMINI_API_KEY`.
+
 	client, err := genai.NewClient(ctx, nil)
 	if err != nil {
 		log.Fatal(err)

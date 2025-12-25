@@ -17,9 +17,9 @@ import (
 	"gorm.io/gorm/clause"
 )
 
-// generateTokensAndSetCookies はトークン生成とCookie設定をまとめたヘルパー関数です。
+// generateTokensAndSetCookies はトークン生成とCookie設定をまとめたヘルパー関数
 func generateTokensAndSetCookies(c *gin.Context, user *models.User) error {
-	// authパッケージの関数を使ってアクセストークンを生成
+	// アクセストークンを生成
 	accessTokenString, err := auth.GenerateAccessToken(user.ID)
 	if err != nil {
 		return err
@@ -33,8 +33,6 @@ func generateTokensAndSetCookies(c *gin.Context, user *models.User) error {
 	}
 	refreshTokenString := base64.URLEncoding.EncodeToString(b)
 
-	// リフレッシュトークンをハッシュ化してDBに保存
-	// TODO:ハッシュ化を関数にしてutils/hash.goに移動
 	refreshTokenHash, err := bcrypt.GenerateFromPassword([]byte(refreshTokenString), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -44,6 +42,7 @@ func generateTokensAndSetCookies(c *gin.Context, user *models.User) error {
 		TokenHash: string(refreshTokenHash),
 		ExpiresAt: refreshExpirationTime,
 	}
+
 	// ユーザーIDが競合した場合は、トークンハッシュと有効期限を更新する
 	if err := models.DB.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "user_id"}},
@@ -80,7 +79,7 @@ func generateTokensAndSetCookies(c *gin.Context, user *models.User) error {
 	return nil
 }
 
-// Register はユーザーを新規登録します。
+// Register
 func Register(c *gin.Context) {
 	var input struct {
 		Name     string `json:"name" binding:"required"`
@@ -102,7 +101,7 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User created"})
 }
 
-// Login はログイン処理を行います。
+// Login
 func Login(c *gin.Context) {
 	var input struct {
 		Email    string `json:"email" binding:"required"`
@@ -136,7 +135,7 @@ func RefreshToken(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not provided"})
 		return
 	}
-	// 2. DBに保存されているすべての有効なリフレッシュトークンを取得
+	// DBに保存されているすべての有効なリフレッシュトークンを取得
 	var activeTokens []models.RefreshToken
 	if err := models.DB.Where("expires_at > ?", time.Now()).Find(&activeTokens).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
@@ -146,24 +145,22 @@ func RefreshToken(c *gin.Context) {
 	var matchedToken models.RefreshToken
 	var userFound bool
 
-	// 3. 受け取ったトークンとDB内のハッシュを一つずつ比較
+	// 受け取ったトークンとDB内のハッシュを一つずつ比較
 	for _, tokenRecord := range activeTokens {
 		// ハッシュの比較
 		if err := bcrypt.CompareHashAndPassword([]byte(tokenRecord.TokenHash), []byte(refreshTokenString)); err == nil {
-			// 一致するトークンが見つかった
+
 			matchedToken = tokenRecord
 			userFound = true
 			break
 		}
 	}
 
-	// 4. 一致するトークンが見つからなかった場合
 	if !userFound {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 		return
 	}
 
-	// 検証成功後、新しいトークンペアを発行
 	var user models.User
 	models.DB.First(&user, matchedToken.UserID)
 	if err := generateTokensAndSetCookies(c, &user); err != nil {
@@ -173,7 +170,7 @@ func RefreshToken(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Token refreshed"})
 }
 
-// Logout はログアウト処理を行います。
+// Logout
 func Logout(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 	models.DB.Where("user_id = ?", userID).Delete(&models.RefreshToken{})
@@ -182,7 +179,7 @@ func Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out"})
 }
 
-// GetUser は認証済みユーザーの情報を返します。
+// GetUser
 func GetUser(c *gin.Context) {
 	userID, _ := c.Get("userID")
 	fmt.Println("Fetching user with ID:", userID)
