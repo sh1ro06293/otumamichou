@@ -3,6 +3,7 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import apiClient from '../lib/axios';
+import { LogoutButton } from '../components/LogoutButton';
 
 function Mypage() {
   const { user, setUser } = useAuth();
@@ -12,16 +13,6 @@ function Mypage() {
   if (user && uuid && user.uuid.replace(/-/g, '') !== uuid.replace(/-/g, '')) {
     return <div>不正なアクセスです。</div>;
   }
-
-  const handleLogout = async () => {
-    try {
-      await apiClient.post('/logout');
-      setUser(null);
-      navigate('/');
-    } catch (error) {
-      console.error('Failed to logout:', error);
-    }
-  };
 
   if (!user) {
 
@@ -41,7 +32,7 @@ function Mypage() {
         <p>
           <strong>Email:</strong> {user.email}
         </p>
-        <button onClick={handleLogout}>Logout</button>
+        <LogoutButton />
       </div>
       <div>
         <p>

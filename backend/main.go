@@ -31,10 +31,20 @@ func main() {
 
 	// CORS (Cross-Origin Resource Sharing) の設定
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://localhost:5173", "https://otumami.merryshiro.org"},
-		// AllowOrigins:     []string{"*"}, // すべてのオリジンを許可
-		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		AllowOrigins: []string{
+			"http://localhost:5173",
+			"https://otumami.merryshiro.org",
+		},
+		AllowMethods: []string{
+			"GET", "POST", "PUT", "DELETE", "OPTIONS",
+		},
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Accept",
+			"Authorization",
+			"X-Requested-With",
+		},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
