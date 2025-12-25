@@ -24,9 +24,6 @@ function Mypage() {
       <div>
         <h1>My Page</h1>
         <p>
-          <strong>UUID:</strong> {user.uuid}
-        </p>
-        <p>
           <strong>Name:</strong> {user.name}
         </p>
         <p>
