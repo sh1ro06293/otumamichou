@@ -2,13 +2,63 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/sh1ro06293/otumamichou/controllers"
+	"github.com/sh1ro06293/otumamichou/initializers"
+	"github.com/sh1ro06293/otumamichou/middlewares"
+	"github.com/sh1ro06293/otumamichou/models"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	// 初期化処理を呼び出す
+
+	initializers.LoadEnvVariables()
+	initializers.ConnectToDB()
+}
+
 func main() {
+	log.Println("Starting application...")
+
+	models.DB.AutoMigrate(&models.User{}, &models.RefreshToken{})
+
 	r := gin.Default()
-	r.GET("/", func(c *gin.Context) {
-		c.String(200, "Hello, Gin!")
-	})
-	r.Run(":8000")
+
+	// CORS (Cross-Origin Resource Sharing) の設定
+	r.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:5173", "https://otumami.merryshiro.org"},
+		// AllowOrigins:     []string{"*"}, // すべてのオリジンを許可
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+	// APIルーティングの設定
+	api := r.Group("/api")
+	{
+		// --- 認証が不要なルート ---
+		r.GET("/", func(c *gin.Context) {
+			c.String(http.StatusOK, "hello world")
+		})
+		api.POST("/register", controllers.Register)
+		api.POST("/login", controllers.Login)
+		api.POST("/refresh_token", controllers.RefreshToken)
+
+		// --- 認証が必要なルートグループ ---
+		authorized := api.Group("/")
+		authorized.Use(middlewares.AuthMiddleware())
+		{
+			authorized.GET("user", controllers.GetUser)
+			authorized.POST("logout", controllers.Logout)
+			authorized.POST("otumami", controllers.POSTOtumami)
+		}
+	}
+
+	r.Run(":8080")
 }

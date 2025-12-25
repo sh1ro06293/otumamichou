@@ -11,5 +11,8 @@ export default defineConfig({
       usePolling: true,
       interval: 1000,
     },
+    allowedHosts: [
+      'otumami.merryshiro.org'
+    ]
   }
 })

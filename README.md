@@ -1,5 +1,8 @@
 # Otumamichou
 
+## 概要
+AIに入れたい食べ物と入れたくない食べ物を送り、おつまみを生成してくれるサービス
+
 ## 起動方法
 
 ```sh
@@ -14,9 +17,11 @@ docker-compose up --build
 - データベース
   - Mysql
 - api
-  - OpenAI
+  - ~~OpenAI~~
+  - Gemini
 - インフラ
-  - aws
+  - ~~aws~~
+  - 自宅の鯖（時間があれば）
 
 
 ## 各種URL
@@ -30,8 +35,6 @@ docker-compose up --build
 - **phpMyAdmin（DB管理画面）**  
   [http://localhost:8080](http://localhost:8080)
 
-  - ユーザー名: `root`
-  - パスワード: `root`
 
 ## 備考
 
