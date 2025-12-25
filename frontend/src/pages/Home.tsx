@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { LogoutButton } from '../components/LogoutButton';
 
 function Home() {
   const { user } = useAuth();
@@ -11,6 +12,7 @@ function Home() {
         <div>
           <p>ようこそ, {user.name}さん！</p>
           <Link to={`/mypage/${user.uuid}`}>マイページへ</Link>
+          <LogoutButton />
         </div>
       ) : (
         <div>
