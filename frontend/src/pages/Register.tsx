@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../lib/axios';
+import { useAuth } from '../hooks/useAuth';
 import { Button, Field, Input, Text } from "@chakra-ui/react"
 
 function Register() {
@@ -9,6 +10,7 @@ function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -17,12 +19,18 @@ function Register() {
 
     try {
       // バックエンドの /register エンドポイントにPOSTリクエストを送信
-      await apiClient.post('/register', { name, email, password });
+      const response = await apiClient.post('/register', { name, email, password });
+
+       setUser({
+          uuid: response.data.uuid,
+          name: response.data.name,
+          email: response.data.email,
+        });
       
 
       // 成功したらアラートを表示し、ログインページへリダイレクト
       // alert('登録が完了しました。ログインしてください。');
-      navigate('/');
+      navigate('/mypage/' + response.data.uuid); // ここでは仮にemailを使っていますが、実際にはUUIDなどを使うべきです
     } catch (err: any) {
       // エラーハンドリング (例: メールアドレスが既に使われている場合など)
       if (err.response && err.response.data && err.response.data.error) {

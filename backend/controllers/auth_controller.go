@@ -98,7 +98,13 @@ func Register(c *gin.Context) {
 		Password: string(hashedPassword),
 	}
 	models.DB.Create(&newUser)
-	c.JSON(http.StatusOK, gin.H{"message": "User created"})
+	// c.JSON(http.StatusOK, gin.H{"message": "User created"})
+	if err := generateTokensAndSetCookies(c, &newUser); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not set cookies"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"uuid": newUser.UUID, "name": newUser.Name, "email": newUser.Email})
+
 }
 
 // Login
