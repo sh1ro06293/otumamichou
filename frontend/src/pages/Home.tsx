@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import { LogoutButton } from '../components/LogoutButton';
 import { MypageButton } from '../components/MypageButton';
 import { LoginButton } from '../components/LoginButton';
-import { Button, HStack, Text } from "@chakra-ui/react";
+import { HStack, Text } from "@chakra-ui/react";
 
 function Home() {
   const { user } = useAuth();
