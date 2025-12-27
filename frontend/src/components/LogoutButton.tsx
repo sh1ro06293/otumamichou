@@ -3,6 +3,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import apiClient from '../lib/axios';
+import { Button } from '@chakra-ui/react';
 
 export const LogoutButton = () => {
   const { setUser } = useAuth();
@@ -19,8 +20,8 @@ export const LogoutButton = () => {
   };
 
   return (
-    <button onClick={handleLogout}>
+    <Button onClick={handleLogout} backgroundColor={"#666"}>
       Logout
-    </button>
+    </Button>
   );
 };

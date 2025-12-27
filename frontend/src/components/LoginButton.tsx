@@ -10,6 +10,7 @@ export const LoginButton = () => {
       size="sm"
       marginLeft={2}
       color="white"
+      backgroundColor={"#666"}
     >
       ログインページへ
     </Button>

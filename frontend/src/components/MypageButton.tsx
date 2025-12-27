@@ -15,7 +15,7 @@ export const MypageButton = () => {
         navigate('/mypage/' + user.uuid);
     };
     return(
-    <Button colorScheme="teal" size="md" marginLeft={2} onClick={() => onClickBtn()}>マイページへ</Button>
+    <Button colorScheme="teal" size="md"  marginLeft={2} backgroundColor={"#666"} onClick={() => onClickBtn()}>マイページへ</Button>
     );
 };
 
