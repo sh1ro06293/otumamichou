@@ -21,10 +21,14 @@ docker-compose up --build
   - Gemini
 - インフラ
   - ~~aws~~
-  - 自宅の鯖（時間があれば）
+  - 自宅の鯖
 
 
 ## 各種URL
+
+- **デプロイURL**  
+  [https://otumami.merryshiro.org/](https://otumami.merryshiro.org/)
+
 
 - **フロントエンド（React）**  
   [http://localhost:5173](http://localhost:5173)
