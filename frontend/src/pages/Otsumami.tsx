@@ -210,15 +210,15 @@ function Otsumami() {
       </div>
       <div>
         {resData !== null ? (
-          <div>
-            <h2>{resData.data.name}</h2>
-            <h3>材料</h3>
-            <p>{resData.data.ingredients}</p>
-            <Heading as="h3" size="md">作り方</Heading>
+          <Flex direction="column" marginTop={6} marginLeft={4}>
+            <Text textStyle="4xl" marginBottom={4}>{resData.data.name}</Text>
+            <Heading as="h3" size="md" marginBottom={2}>材料</Heading>
+            <Text whiteSpace="pre-wrap">{resData.data.ingredients}</Text>
+            <Heading as="h3" size="md" marginBottom={2} marginTop={3}>作り方</Heading>
             <Text whiteSpace="pre-wrap">
               {resData.data.instructions}
             </Text>
-          </div>
+          </Flex>
         ) : (
           <div></div>
         )}
