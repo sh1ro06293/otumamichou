@@ -2,12 +2,15 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../lib/axios';
+import { useAuth } from '../hooks/useAuth';
+import { Button, Field, Input, Text } from "@chakra-ui/react"
 
 function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { setUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
@@ -16,11 +19,18 @@ function Register() {
 
     try {
       // バックエンドの /register エンドポイントにPOSTリクエストを送信
-      await apiClient.post('/register', { name, email, password });
+      const response = await apiClient.post('/register', { name, email, password });
+
+       setUser({
+          uuid: response.data.uuid,
+          name: response.data.name,
+          email: response.data.email,
+        });
+      
 
       // 成功したらアラートを表示し、ログインページへリダイレクト
-      alert('登録が完了しました。ログインしてください。');
-      navigate('/login');
+      // alert('登録が完了しました。ログインしてください。');
+      navigate('/mypage/' + response.data.uuid); // ここでは仮にemailを使っていますが、実際にはUUIDなどを使うべきです
     } catch (err: any) {
       // エラーハンドリング (例: メールアドレスが既に使われている場合など)
       if (err.response && err.response.data && err.response.data.error) {
@@ -34,44 +44,56 @@ function Register() {
 
   return (
     <div>
-      <h1>新規登録</h1>
+      <Text textStyle="6xl"> 新規登録</Text> 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name">ユーザー名:</label>
-          <input
+          <Field.Root required marginTop={3}>
+          <Field.Label>ユーザー名</Field.Label>
+          <Input
+            marginTop={1}
+            placeholder="Enter your name"
             id="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required
           />
+          </Field.Root>
         </div>
         <div>
-          <label htmlFor="email">メールアドレス:</label>
-          <input
+          <Field.Root required marginTop={3}>
+          <Field.Label>メールアドレス</Field.Label>
+          <Input
+            marginTop={1}
+            placeholder="Enter your email"
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+          </Field.Root>
         </div>
         <div>
-          <label htmlFor="password">パスワード:</label>
-          <input
+          <Field.Root required marginTop={3}>
+          <Field.Label>パスワード</Field.Label>
+          <Input
+            marginTop={1}
+            placeholder="Enter your password"
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          </Field.Root>
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">登録する</button>
+      
+        <Button type="submit"backgroundColor={"#666"} marginTop={5}>登録する</Button>
       </form>
-      <p>
+      <Text textStyle="md" marginTop={4}>
         アカウントをお持ちですか？ <Link to="/login">ログイン</Link>
-      </p>
+      </Text>
     </div>
   );
 }

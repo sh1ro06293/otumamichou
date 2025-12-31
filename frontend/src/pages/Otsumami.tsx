@@ -3,10 +3,12 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { Text, Heading } from '@chakra-ui/react';
+import { Text, Heading, Box, Flex, Button, Input} from '@chakra-ui/react';
+
 
 
 import { postOtumami } from '../lib/axios';
+import MypageButton from '../components/MypageButton';
 
 function Otsumami() {
   const [includeIngredients, setIncludeIngredients] = useState<string[]>([]);
@@ -15,15 +17,13 @@ function Otsumami() {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
   const { uuid } = useParams();
-  const navigate = useNavigate();
+
 
   if (user && uuid && user.uuid.replace(/-/g, '') !== uuid.replace(/-/g, '')) {
     return <div>不正なアクセスです。</div>;
   }
 
-  const mypage = async () => {
-    navigate('/mypage/' + user?.uuid);
-  };
+
 
   const handleGenerate = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -99,114 +99,126 @@ function Otsumami() {
   return (
     <div>
       <div>
-        <h1>おつまみ生成 Page</h1>
-        <button onClick={mypage}>mypage</button>
+        <Text textStyle="6xl" marginBottom={4}>おつまみ生成</Text> 
+        <MypageButton />
       </div>
       <div>
         <form>
-          <div>
-            <label>使用したい食材</label>
-            <button
-              type="button"
-              onClick={() => setIncludeIngredients(['', ...includeIngredients])}
-            >
-              追加
-            </button>
-            {includeIngredients.map((ingredient, index) => (
-              <div key={index}>
-                <input
-                  type="text"
-                  value={ingredient}
-                  onChange={(e) =>
-                    addItem(e, index, includeIngredients, setIncludeIngredients)
-                  }
-                  onBlur={() => {
-                    onBlurItem(
-                      includeIngredients,
-                      setIncludeIngredients,
-                      index,
-                      ingredient
-                    );
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    DeleteItem(
-                      index,
-                      setIncludeIngredients,
-                      includeIngredients
-                    );
-                  }}
-                >
-                  削除
-                </button>
-              </div>
-            ))}
-          </div>
-          <div>
-            <label>使用したくない食材</label>
-            <button
-              type="button"
-              onClick={() => setExcludeIngredients(['', ...excludeIngredients])}
-            >
-              追加
-            </button>
-            {excludeIngredients.map((ingredient, index) => (
-              <div key={index}>
-                <input
-                  type="text"
-                  value={ingredient}
-                  onChange={(e) => {
-                    addItem(
-                      e,
-                      index,
-                      excludeIngredients,
-                      setExcludeIngredients
-                    );
-                  }}
-                  onBlur={() => {
-                    onBlurItem(
-                      excludeIngredients,
-                      setExcludeIngredients,
-                      index,
-                      ingredient
-                    );
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    DeleteItem(
-                      index,
-                      setExcludeIngredients,
-                      excludeIngredients
-                    );
-                  }}
-                >
-                  削除
-                </button>
-              </div>
-            ))}
-          </div>
+          <Flex>
+        <Box flex="1" p="4">
+          <Heading size="md" mb="4">使用したい食材</Heading>
+          <Button
+            colorScheme="teal"
+            size="sm"
+            background={"#666"}
+            onClick={() => setIncludeIngredients(['', ...includeIngredients])}
+          >
+            追加
+          </Button>
+          {includeIngredients.map((ingredient, index) => (
+            <Flex key={index} mt="2" align="center">
+              <Input
+                size="sm"
+                value={ingredient}
+                onChange={(e) =>
+                  addItem(e, index, includeIngredients, setIncludeIngredients)
+                }
+                onBlur={() => {
+                  onBlurItem(
+                    includeIngredients,
+                    setIncludeIngredients,
+                    index,
+                    ingredient
+                  );
+                }}
+              />
+              <Button
+                ml="2"
+                size="sm"
+                colorScheme="red"
+                background={"#666"}
+                onClick={() => {
+                  DeleteItem(
+                    index,
+                    setIncludeIngredients,
+                    includeIngredients
+                  );
+                }}
+              >
+                削除
+              </Button>
+            </Flex>
+          ))}
+        </Box>
+        <Box flex="1" p="4">
+          <Heading size="md" mb="4">使用したくない食材</Heading>
+          <Button
+            colorScheme="teal"
+            size="sm"
+            background={"#666"}
+            onClick={() => setExcludeIngredients(['', ...excludeIngredients])}
+          >
+            追加
+          </Button>
+          {excludeIngredients.map((ingredient, index) => (
+            <Flex key={index} mt="2" align="center">
+              <Input
+                size="sm"
+                value={ingredient}
+                onChange={(e) => {
+                  addItem(
+                    e,
+                    index,
+                    excludeIngredients,
+                    setExcludeIngredients
+                  );
+                }}
+                onBlur={() => {
+                  onBlurItem(
+                    excludeIngredients,
+                    setExcludeIngredients,
+                    index,
+                    ingredient
+                  );
+                }}
+              />
+              <Button
+                ml="2"
+                size="sm"
+                colorScheme="red"
+                background={"#666"}
+                onClick={() => {
+                  DeleteItem(
+                    index,
+                    setExcludeIngredients,
+                    excludeIngredients
+                  );
+                }}
+              >
+                削除
+              </Button>
+            </Flex>
+          ))}
+        </Box>
+      </Flex>
           <p>
-            <button type="button" onClick={handleGenerate} disabled={isLoading}>
+            <Button type="button" onClick={handleGenerate} disabled={isLoading} background={"#666"} marginLeft={4} marginTop={4}>
               {isLoading ? '生成中...' : '生成'}
-            </button>
+            </Button>
           </p>
         </form>
       </div>
       <div>
         {resData !== null ? (
-          <div>
-            <h2>{resData.data.name}</h2>
-            <h3>材料</h3>
-            <p>{resData.data.ingredients}</p>
-            <Heading as="h3" size="md">作り方</Heading>
+          <Flex direction="column" marginTop={6} marginLeft={4}>
+            <Text textStyle="4xl" marginBottom={4}>{resData.data.name}</Text>
+            <Heading as="h3" size="md" marginBottom={2}>材料</Heading>
+            <Text whiteSpace="pre-wrap">{resData.data.ingredients}</Text>
+            <Heading as="h3" size="md" marginBottom={2} marginTop={3}>作り方</Heading>
             <Text whiteSpace="pre-wrap">
               {resData.data.instructions}
             </Text>
-          </div>
+          </Flex>
         ) : (
           <div></div>
         )}

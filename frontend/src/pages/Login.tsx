@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { FormEvent } from 'react';
+import { Button, Field, Input } from "@chakra-ui/react"
 import { useNavigate, Link } from 'react-router-dom';
 import apiClient from '../lib/axios';
 import { useAuth } from '../hooks/useAuth';
@@ -51,28 +52,34 @@ function Login() {
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">Email:</label>
-          <input
+          <Field.Root required>
+          <Field.Label>Email</Field.Label>
+          <Input
+            placeholder="Enter your email"
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+          </Field.Root>
         </div>
         <div>
-          <label htmlFor="password">Password:</label>
-          <input
+          <Field.Root required marginTop={5}>
+          <Field.Label>Password</Field.Label>
+          <Input
+            placeholder="Enter your password"
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          </Field.Root>
         </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Login</button>
+        <Button type="submit" backgroundColor={"#666"} marginTop={3}>Login</Button>
       </form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <p style={{ textAlign: 'center', marginTop: '1rem' }}>
         アカウントをお持ちでないですか？ <Link to="/register">新規登録</Link>
       </p>
